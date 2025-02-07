@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import Message from './components/Message';
 import MessageForm from './components/MessageForm';
@@ -10,6 +10,7 @@ function App({name}) {
     { text: "Как дела?", author: "Боб" },
   ]);
   const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
   
   const robotResponses = [
     "Интересная мысль! Расскажите подробнее.",
@@ -19,6 +20,14 @@ function App({name}) {
     "Спасибо за ваше сообщение!",
   ];
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messageList, isTyping]);
+
   const getRobotResponse = () => {
     const randomIndex = Math.floor(Math.random() * robotResponses.length);
     return robotResponses[randomIndex];
@@ -27,10 +36,8 @@ function App({name}) {
   const handleNewMessage = (message) => {
     setMessageList(prevMessages => [...prevMessages, message]);
     
-    // набора текста
     setIsTyping(true);
     
-    // 1.5 секунды
     setTimeout(() => {
       const robotMessage = {
         text: getRobotResponse(),
@@ -45,19 +52,22 @@ function App({name}) {
     <div className="App">
       <h1>{name}</h1>
       <Message text={messageText} />
-      <div className="message-list">
-        {messageList.map((message, index) => (
-          <div key={index} className="message-item">
-            <strong>{message.author}: </strong>
-            <span>{message.text}</span>
-          </div>
-        ))}
-        {isTyping && (
-          <div className="message-item typing">
-            <strong>Робот: </strong>
-            <span className="typing-indicator">печатает...</span>
-          </div>
-        )}
+      <div className="message-container">
+        <div className="message-list">
+          {messageList.map((message, index) => (
+            <div key={index} className="message-item">
+              <strong>{message.author}: </strong>
+              <span>{message.text}</span>
+            </div>
+          ))}
+          {isTyping && (
+            <div className="message-item typing">
+              <strong>Робот: </strong>
+              <span className="typing-indicator">печатает...</span>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
       <MessageForm onSubmit={handleNewMessage} />
     </div>
