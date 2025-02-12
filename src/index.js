@@ -6,20 +6,26 @@ import { ThemeProvider, createTheme } from '@mui/material';
 
 const theme = createTheme({
   palette: {
+    mode: 'dark',
     primary: {
-      main: '#1976d2',
-      light: '#42a5f5',
-      dark: '#1565c0',
+      main: '#90caf9',
+      light: '#e3f2fd',
+      dark: '#42a5f5',
     },
     secondary: {
-      main: '#9c27b0',
-      light: '#ba68c8',
-      dark: '#7b1fa2',
+      main: '#ce93d8',
+      light: '#f3e5f5',
+      dark: '#ab47bc',
     },
     background: {
-      default: '#f5f5f5',
-      paper: '#ffffff',
+      default: '#121212',
+      paper: '#1e1e1e',
     },
+    text: {
+      primary: '#ffffff',
+      secondary: 'rgba(255, 255, 255, 0.7)',
+    },
+    divider: 'rgba(255, 255, 255, 0.12)',
   },
   typography: {
     fontFamily: [
@@ -29,11 +35,12 @@ const theme = createTheme({
     ].join(','),
     h4: {
       fontWeight: 500,
-      color: '#1976d2',
+      color: '#90caf9',
     },
     h6: {
       fontWeight: 500,
       marginBottom: '1rem',
+      color: '#ffffff',
     },
   },
   components: {
@@ -41,6 +48,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 8,
+          backgroundColor: '#1e1e1e',
         },
       },
     },
@@ -48,7 +56,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '&.MuiListItem-button:hover': {
-            backgroundColor: 'rgba(25, 118, 210, 0.08)',
+            backgroundColor: 'rgba(144, 202, 249, 0.08)',
           },
         },
       },
@@ -58,6 +66,20 @@ const theme = createTheme({
         root: {
           borderRadius: 8,
           textTransform: 'none',
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: 'rgba(255, 255, 255, 0.23)',
+            },
+            '&:hover fieldset': {
+              borderColor: '#90caf9',
+            },
+          },
         },
       },
     },
