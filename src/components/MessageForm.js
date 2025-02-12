@@ -1,33 +1,60 @@
-import { useState } from 'react';
-import './MessageForm.css';
+import { useState, useRef, useEffect } from 'react';
+import { TextField, Button, Box } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
 
 function MessageForm({ onSubmit }) {
-  const [text, setText] = useState('');
-  
+  const [message, setMessage] = useState('');
+  const inputRef = useRef(null);
+
+  // Фокус при первом рендере
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (text.trim()) {
+    if (message.trim()) {
       onSubmit({
-        text: text.trim(),
-        author: 'Пользователь'
+        text: message,
+        author: 'Пользователь',
+        timestamp: new Date().toISOString()
       });
-      setText('');
+      setMessage('');
+      // Фокус после отправки сообщения
+      inputRef.current?.focus();
     }
   };
 
   return (
-    <form className="message-form" onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        display: 'flex',
+        gap: 1,
+        mt: 2
+      }}
+    >
+      <TextField
+        inputRef={inputRef}
+        fullWidth
+        variant="outlined"
+        size="small"
         placeholder="Введите сообщение..."
-        className="message-input"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        sx={{ flexGrow: 1 }}
       />
-      <button type="submit" className="message-button">
+      <Button
+        variant="contained"
+        color="primary"
+        type="submit"
+        disabled={!message.trim()}
+        endIcon={<SendIcon />}
+      >
         Отправить
-      </button>
-    </form>
+      </Button>
+    </Box>
   );
 }
 

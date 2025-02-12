@@ -2,15 +2,17 @@ import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import Message from './components/Message';
 import MessageForm from './components/MessageForm';
+import { Container, Paper, Typography, List, ListItem, ListItemText, Divider, Grid } from '@mui/material';
 
 function App({name}) {
   const messageText = "Добро пожаловать в React!";
   const [messageList, setMessageList] = useState([
-    { text: "Привет, мир!", author: "Алиса" },
-    { text: "Как дела?", author: "Боб" },
+    { text: "Привет, мир!", author: "Алиса", isInitial: true },
+    { text: "Как дела?", author: "Боб", isInitial: true },
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+  const isFirstRender = useRef(true);
   
   const robotResponses = [
     "Интересная мысль! Расскажите подробнее.",
@@ -34,43 +36,110 @@ function App({name}) {
   };
 
   const handleNewMessage = (message) => {
-    setMessageList(prevMessages => [...prevMessages, message]);
-    
-    setIsTyping(true);
-    
-    setTimeout(() => {
-      const robotMessage = {
-        text: getRobotResponse(),
-        author: 'Робот'
-      };
-      setMessageList(prevMessages => [...prevMessages, robotMessage]);
-      setIsTyping(false);
-    }, 1500);
+    setMessageList(prevMessages => [...prevMessages, { ...message, isInitial: false }]);
   };
 
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    const messages = messageList;
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      
+      if (lastMessage.author !== 'Робот' && !lastMessage.isInitial) {
+        setIsTyping(true);
+        
+        setTimeout(() => {
+          const robotResponse = {
+            text: getRobotResponse(),
+            author: 'Робот',
+            timestamp: new Date().toISOString()
+          };
+          
+          setMessageList(prev => [...prev, robotResponse]);
+          setIsTyping(false);
+        }, 1500);
+      }
+    }
+  }, [messageList]);
+
+  // Добавляем массив чатов
+  const chats = [
+    { id: 'chat1', name: 'Общий чат' },
+    { id: 'chat2', name: 'Рабочий чат' },
+    { id: 'chat3', name: 'Личный чат' },
+    { id: 'chat4', name: 'Семейный чат' },
+  ];
+
   return (
-    <div className="App">
-      <h1>{name}</h1>
-      <Message text={messageText} />
-      <div className="message-container">
-        <div className="message-list">
-          {messageList.map((message, index) => (
-            <div key={index} className="message-item">
-              <strong>{message.author}: </strong>
-              <span>{message.text}</span>
-            </div>
-          ))}
-          {isTyping && (
-            <div className="message-item typing">
-              <strong>Робот: </strong>
-              <span className="typing-indicator">печатает...</span>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-      </div>
-      <MessageForm onSubmit={handleNewMessage} />
-    </div>
+    <Container maxWidth="lg">
+      <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          {name}
+        </Typography>
+        <Grid container spacing={2}>
+          {/* Список чатов */}
+          <Grid item xs={3}>
+            <Paper elevation={1} sx={{ p: 2, height: '70vh' }}>
+              <Typography variant="h6" gutterBottom>
+                Чаты
+              </Typography>
+              <List>
+                {chats.map((chat) => (
+                  <div key={chat.id}>
+                    <ListItem button>
+                      <ListItemText primary={chat.name} />
+                    </ListItem>
+                    <Divider />
+                  </div>
+                ))}
+              </List>
+            </Paper>
+          </Grid>
+
+          {/* Область сообщений */}
+          <Grid item xs={9}>
+            <Message text={messageText} />
+            <Paper elevation={1} sx={{ p: 2, mb: 2, height: '60vh', overflow: 'auto' }}>
+              <List>
+                {messageList.map((message, index) => (
+                  <div key={index}>
+                    <ListItem>
+                      <ListItemText
+                        primary={
+                          <Typography component="span" variant="body1">
+                            <strong>{message.author}: </strong>
+                            {message.text}
+                          </Typography>
+                        }
+                      />
+                    </ListItem>
+                    {index < messageList.length - 1 && <Divider />}
+                  </div>
+                ))}
+                {isTyping && (
+                  <ListItem>
+                    <ListItemText
+                      primary={
+                        <Typography component="span" variant="body1">
+                          <strong>Робот: </strong>
+                          <span className="typing-indicator">печатает...</span>
+                        </Typography>
+                      }
+                    />
+                  </ListItem>
+                )}
+                <div ref={messagesEndRef} />
+              </List>
+            </Paper>
+            <MessageForm onSubmit={handleNewMessage} />
+          </Grid>
+        </Grid>
+      </Paper>
+    </Container>
   );
 }
 
