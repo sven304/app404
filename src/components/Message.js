@@ -1,11 +1,13 @@
 import React from 'react';
-import './Message.css';
+import { Typography, Box } from '@mui/material';
 
 function Message({ text }) {
   return (
-    <div className="message">
-      {text}
-    </div>
+    <Box sx={{ mb: 2 }}>
+      <Typography variant="body1">
+        {text}
+      </Typography>
+    </Box>
   );
 }
 

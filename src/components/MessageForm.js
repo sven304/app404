@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { TextField, Button, Box } from '@mui/material';
+import { Box, TextField, Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 
 function MessageForm({ onSubmit }) {
   const [message, setMessage] = useState('');
   const inputRef = useRef(null);
 
-  // Фокус при первом рендере
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
@@ -20,7 +19,6 @@ function MessageForm({ onSubmit }) {
         timestamp: new Date().toISOString()
       });
       setMessage('');
-      // Фокус после отправки сообщения
       inputRef.current?.focus();
     }
   };
@@ -31,7 +29,7 @@ function MessageForm({ onSubmit }) {
       onSubmit={handleSubmit}
       sx={{
         display: 'flex',
-        gap: 1,
+        gap: 2,
         mt: 2
       }}
     >
@@ -39,11 +37,10 @@ function MessageForm({ onSubmit }) {
         inputRef={inputRef}
         fullWidth
         variant="outlined"
-        size="small"
+        size="medium"
         placeholder="Введите сообщение..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        sx={{ flexGrow: 1 }}
       />
       <Button
         variant="contained"
